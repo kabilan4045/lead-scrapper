@@ -9,11 +9,14 @@ export default function SummaryStrip({ leads }: { leads: Lead[] }) {
     STATUS_OPTIONS.forEach((s) => (statusCounts[s] = 0));
 
     let closedWonDealValue = 0;
-    const perPerson: Record<string, { deals: number; revenue: number }> = {};
-    ASSIGNED_TO_OPTIONS.forEach((a) => (perPerson[a] = { deals: 0, revenue: 0 }));
+    const perPerson: Record<string, { totalLeads: number; deals: number; revenue: number }> = {};
+    ASSIGNED_TO_OPTIONS.forEach((a) => (perPerson[a] = { totalLeads: 0, deals: 0, revenue: 0 }));
 
     for (const lead of leads) {
       if (lead.status in statusCounts) statusCounts[lead.status] += 1;
+      if (lead.assigned_to && lead.assigned_to in perPerson) {
+        perPerson[lead.assigned_to].totalLeads += 1;
+      }
       if (lead.status === "Closed-Won") {
         closedWonDealValue += lead.deal_value ?? 0;
         if (lead.assigned_to && lead.assigned_to in perPerson) {
@@ -45,6 +48,7 @@ export default function SummaryStrip({ leads }: { leads: Lead[] }) {
           <thead>
             <tr className="text-left text-xs uppercase tracking-wide text-slate-500 bg-slate-50">
               <th className="px-4 py-2">Assigned To</th>
+              <th className="px-4 py-2">Total Leads</th>
               <th className="px-4 py-2">Deals Closed</th>
               <th className="px-4 py-2">Revenue</th>
             </tr>
@@ -53,6 +57,7 @@ export default function SummaryStrip({ leads }: { leads: Lead[] }) {
             {ASSIGNED_TO_OPTIONS.map((person) => (
               <tr key={person} className="border-t border-slate-100 text-slate-800">
                 <td className="px-4 py-2 font-medium text-slate-900">{person}</td>
+                <td className="px-4 py-2">{stats.perPerson[person].totalLeads}</td>
                 <td className="px-4 py-2">{stats.perPerson[person].deals}</td>
                 <td className="px-4 py-2">{formatMoney(stats.perPerson[person].revenue)}</td>
               </tr>

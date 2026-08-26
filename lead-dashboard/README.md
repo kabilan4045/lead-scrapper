@@ -70,7 +70,7 @@ only edit from one place at a time.
 Fixed dropdown options, defined at the top of `excel_io.py`:
 
 - Status: `New`, `Contacted`, `Follow-up`, `Interested`, `Closed-Won`, `Closed-Lost`
-- Assigned To: `Me`, `Friend 1`, `Friend 2`
+- Assigned To: `Me`, `Chetan`, `Nandhu`
 
 Edit `STATUS_OPTIONS` / `ASSIGNED_TO_OPTIONS` in `excel_io.py` if these ever
 need to change — they're also what the Dashboard tab's status formulas were

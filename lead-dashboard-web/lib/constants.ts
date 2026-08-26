@@ -9,14 +9,19 @@ export const STATUS_OPTIONS = [
 ] as const;
 export type Status = (typeof STATUS_OPTIONS)[number];
 
-export const ASSIGNED_TO_OPTIONS = ["Me", "Friend 1", "Friend 2"] as const;
+export const ASSIGNED_TO_OPTIONS = ["Me", "Chetan", "Nandhu"] as const;
 export type AssignedTo = (typeof ASSIGNED_TO_OPTIONS)[number];
+
+export function randomAssignee(): AssignedTo {
+  return ASSIGNED_TO_OPTIONS[Math.floor(Math.random() * ASSIGNED_TO_OPTIONS.length)];
+}
 
 export const EDITABLE_FIELDS = [
   "status",
   "assigned_to",
   "follow_up_date",
   "notes",
+  "payment_received",
 ] as const;
 export type EditableField = (typeof EDITABLE_FIELDS)[number];
 

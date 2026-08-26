@@ -12,7 +12,7 @@ from openpyxl import load_workbook
 LEADS_SHEET_NAME = "Leads"
 
 STATUS_OPTIONS = ["New", "Contacted", "Follow-up", "Interested", "Closed-Won", "Closed-Lost"]
-ASSIGNED_TO_OPTIONS = ["Me", "Friend 1", "Friend 2"]
+ASSIGNED_TO_OPTIONS = ["Me", "Chetan", "Nandhu"]
 
 # Internal field name -> Excel column header. Order here is display order.
 DISPLAY_COLUMNS = {

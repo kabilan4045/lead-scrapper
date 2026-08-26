@@ -10,7 +10,7 @@ create table if not exists leads (
   category          text,
   source            text,
   date_added        date not null default current_date,
-  assigned_to       text check (assigned_to is null or assigned_to in ('Me', 'Friend 1', 'Friend 2')),
+  assigned_to       text check (assigned_to is null or assigned_to in ('Me', 'Chetan', 'Nandhu')),
   status            text not null default 'New' check (
                       status in ('New', 'Contacted', 'Follow-up', 'Interested', 'Not Interested', 'Closed-Won', 'Closed-Lost')
                     ),

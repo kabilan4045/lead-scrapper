@@ -4,6 +4,7 @@ deduplicated rows directly into the Supabase "leads" table."""
 
 import argparse
 import os
+import random
 import re
 import sys
 import time
@@ -16,6 +17,9 @@ APIFY_ACTOR_ID = "lukaskrivka~google-maps-with-contact-details"
 APIFY_BASE_URL = "https://api.apify.com/v2"
 POLL_INTERVAL_SECONDS = 5
 MAX_POLL_SECONDS = 900
+
+# Keep in sync with lead-dashboard-web/lib/constants.ts (ASSIGNED_TO_OPTIONS).
+ASSIGNED_TO_OPTIONS = ["Me", "Chetan", "Nandhu"]
 
 
 def parse_args():
@@ -151,6 +155,7 @@ def insert_leads(supabase_url, service_key, records, location):
             "source": "Google Maps",
             "date_added": today,
             "status": "New",
+            "assigned_to": random.choice(ASSIGNED_TO_OPTIONS),
             "website": rec["website"],
             "rating": rec["rating"],
             "email": rec["email"],

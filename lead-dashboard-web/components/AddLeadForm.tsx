@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, type AssignedTo, type Status } from "@/lib/constants";
+import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, randomAssignee, type AssignedTo, type Status } from "@/lib/constants";
 
 export type NewLeadInput = {
   business_name: string;
@@ -34,7 +34,7 @@ export default function AddLeadForm({
   onSubmit: (input: NewLeadInput) => Promise<string | null>;
   onClose: () => void;
 }) {
-  const [form, setForm] = useState<NewLeadInput>(EMPTY);
+  const [form, setForm] = useState<NewLeadInput>(() => ({ ...EMPTY, assigned_to: randomAssignee() }));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -111,7 +111,7 @@ export default function AddLeadForm({
         </Field>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Field label="Assigned To">
+          <Field label="Assigned To (randomly picked, change if needed)">
             <select
               value={form.assigned_to}
               onChange={(e) => set("assigned_to", e.target.value as AssignedTo | "")}

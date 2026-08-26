@@ -11,6 +11,7 @@ type SortField =
   | "category"
   | "assigned_to"
   | "status"
+  | "payment_received"
   | "follow_up_date"
   | "deal_value"
   | "website"
@@ -23,6 +24,7 @@ const COLUMNS: { field: SortField; label: string }[] = [
   { field: "category", label: "Category" },
   { field: "assigned_to", label: "Assigned To" },
   { field: "status", label: "Status" },
+  { field: "payment_received", label: "Payment Received" },
   { field: "follow_up_date", label: "Follow-up Date" },
   { field: "deal_value", label: "Deal Value" },
   { field: "website", label: "Website" },
@@ -44,6 +46,7 @@ export type EditableFields = {
   assigned_to?: AssignedTo | "";
   follow_up_date?: string;
   notes?: string;
+  payment_received?: boolean;
 };
 
 export default function LeadsTable({
@@ -56,6 +59,7 @@ export default function LeadsTable({
   const [sortField, setSortField] = useState<SortField>("business_name");
   const [sortDir, setSortDir] = useState<1 | -1>(1);
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [confirmLead, setConfirmLead] = useState<Lead | null>(null);
 
   const sorted = useMemo(() => {
     const copy = [...leads];
@@ -64,6 +68,9 @@ export default function LeadsTable({
         const av = a.deal_value ?? -Infinity;
         const bv = b.deal_value ?? -Infinity;
         return (av - bv) * sortDir;
+      }
+      if (sortField === "payment_received") {
+        return (Number(a.payment_received) - Number(b.payment_received)) * sortDir;
       }
       const av = (a[sortField] ?? "").toString().toLowerCase();
       const bv = (b[sortField] ?? "").toString().toLowerCase();
@@ -87,6 +94,23 @@ export default function LeadsTable({
     setSavingId(id);
     await onUpdate(id, fields);
     setSavingId(null);
+  }
+
+  function handlePaymentToggle(lead: Lead, checked: boolean) {
+    if (checked) {
+      // Marking payment received is the "deal is actually closed" moment —
+      // gate it behind an explicit confirm instead of a plain checkbox click.
+      setConfirmLead(lead);
+    } else {
+      handleEdit(lead.id, { payment_received: false });
+    }
+  }
+
+  async function confirmPaymentReceived() {
+    if (!confirmLead) return;
+    const lead = confirmLead;
+    setConfirmLead(null);
+    await handleEdit(lead.id, { payment_received: true });
   }
 
   if (leads.length === 0) {
@@ -146,6 +170,16 @@ export default function LeadsTable({
                   ))}
                 </select>
               </td>
+              <td className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={lead.payment_received}
+                  disabled={savingId === lead.id}
+                  onChange={(e) => handlePaymentToggle(lead, e.target.checked)}
+                  className="h-4 w-4 accent-emerald-600 disabled:opacity-50"
+                  aria-label={`Payment received for ${lead.business_name}`}
+                />
+              </td>
               <td className="px-3 py-2">
                 <input
                   key={`follow-up-${lead.id}-${lead.follow_up_date ?? ""}`}
@@ -197,6 +231,35 @@ export default function LeadsTable({
           ))}
         </tbody>
       </table>
+
+      {confirmLead && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6 space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">Confirm payment received</h2>
+            <p className="text-sm text-slate-600">
+              Mark <span className="font-medium text-slate-900">{confirmLead.business_name}</span> as{" "}
+              <span className="font-medium text-emerald-700">Closed-Won</span> with payment received? This updates
+              both the status and payment fields together.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmLead(null)}
+                className="px-4 py-1.5 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmPaymentReceived}
+                className="px-4 py-1.5 text-sm rounded-md bg-emerald-600 text-white font-medium hover:bg-emerald-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

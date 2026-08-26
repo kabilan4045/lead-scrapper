@@ -53,7 +53,7 @@ def seed_scratch_workbook(target_path=SCRATCH_PATH):
         ws.cell(row=r, column=col["Notes"], value=notes)
 
     row(1, "A Hardware", "9876543210", "Jayanagar, Bangalore", "Hardware store", "Me", "New", None, None, None, None)
-    row(2, "B Hardware", "9876543211", "Jayanagar, Bangalore", "Hardware store", "Friend 1", "Contacted", date(2026, 9, 1), 15000, "https://bhardware.example.com", "Called once")
+    row(2, "B Hardware", "9876543211", "Jayanagar, Bangalore", "Hardware store", "Chetan", "Contacted", date(2026, 9, 1), 15000, "https://bhardware.example.com", "Called once")
     row(3, "C Hardware", "9876543212", "Koramangala, Bangalore", "Hardware store", None, "Closed-Won", None, 22000, None, None)
 
     wb.save(target_path)
@@ -78,8 +78,8 @@ def main():
     updated = excel_io.update_lead(SCRATCH_PATH, 1, {"status": "Interested"})
     check("update status persists", updated["status"] == "Interested")
 
-    updated = excel_io.update_lead(SCRATCH_PATH, 1, {"assigned_to": "Friend 2"})
-    check("update assigned_to persists", updated["assigned_to"] == "Friend 2")
+    updated = excel_io.update_lead(SCRATCH_PATH, 1, {"assigned_to": "Nandhu"})
+    check("update assigned_to persists", updated["assigned_to"] == "Nandhu")
 
     updated = excel_io.update_lead(SCRATCH_PATH, 1, {"follow_up_date": "2026-09-15"})
     check("update follow_up_date persists", updated["follow_up_date"] == "2026-09-15")

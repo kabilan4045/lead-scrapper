@@ -5,7 +5,7 @@ Router) + Supabase (Postgres) + Tailwind, deployed on Vercel behind a shared
 passcode.
 
 - **Data**: lives in a Supabase Postgres table (`leads`), not in a file — so
-  you, Friend 1, and Friend 2 can view/edit at the same time from anywhere
+  you, Chetan, and Nandhu can view/edit at the same time from anywhere
   without emailing a spreadsheet around.
 - **Access**: a single shared passcode (env var `APP_PASSCODE`), entered once,
   remembered via an httpOnly cookie for ~6 months. No individual accounts.
@@ -71,7 +71,9 @@ is silently dropped.
 **Status/Assigned To fallback**: any Excel `Status` value that isn't one of
 this app's seven statuses (e.g. the old Excel Dashboard's `Converted`/`Lost`
 placeholders) is imported as `New` rather than rejected. Any `Assigned To`
-value other than `Me` / `Friend 1` / `Friend 2` imports as unassigned.
+value other than `Me` / `Chetan` / `Nandhu` imports as unassigned (this
+script doesn't auto-assign — only new leads from the scraper or the Add Lead
+form do).
 
 ## 4. Deploy to Vercel
 
@@ -107,19 +109,30 @@ out automatically, since the cookie is validated against the current
 ## Features
 
 - **Table**: Business Name, Phone Number, City/Area, Category, Assigned To,
-  Status, Follow-up Date, Deal Value, Website, Notes. Click a column header
-  to sort. A blank Website shows a "No website" badge.
+  Status, Payment Received, Follow-up Date, Deal Value, Website, Notes.
+  Click a column header to sort. A blank Website shows a "No website" badge.
 - **Search**: by business name or phone, as you type.
 - **Filters**: Status, Assigned To, City/Area (city list is built from
   whatever's actually in the data).
-- **Inline editing**: Status, Assigned To, and Follow-up Date are
-  dropdowns/date pickers; Notes is a text field. Each edit writes straight to
-  Supabase.
+- **Inline editing**: Status, Assigned To, Follow-up Date, and Notes edit
+  directly and save immediately. **Payment Received** is different: checking
+  it opens a confirmation dialog ("mark as Closed-Won with payment
+  received?") — only on confirming does it set `payment_received = true`
+  *and* `status = "Closed-Won"` together, in one deliberate action, so a
+  lead can't end up marked paid without also being marked won. Unchecking it
+  (correcting a mistake) doesn't need confirmation.
 - **Add Lead**: a form for manual entries (leads that come in outside the
-  scraper) — business name and phone are required, everything else optional.
+  scraper) — business name and phone are required. `Assigned To` is
+  pre-filled with a random pick of Me/Chetan/Nandhu (override it if you want
+  a specific person instead).
+- **Random assignment**: both the scraper and the Add Lead form assign new
+  leads to Me/Chetan/Nandhu at random rather than defaulting to unassigned,
+  so lead volume spreads across the team automatically. You can still
+  reassign any lead manually via the Assigned To dropdown in the table.
 - **Summary strip**: Total Leads, a count per status, Conversion Rate
   (Closed-Won ÷ Total), Total Deal Value **from Closed-Won leads only**, and
-  a per-person table (deals closed, revenue) for Me / Friend 1 / Friend 2.
+  a per-person table (total leads, deals closed, revenue) for Me / Chetan /
+  Nandhu.
 
 ## Status and Assigned To values
 
@@ -128,12 +141,12 @@ Supabase `check` constraints and by the API routes:
 
 - Status: `New`, `Contacted`, `Follow-up`, `Interested`, `Not Interested`,
   `Closed-Won`, `Closed-Lost`
-- Assigned To: `Me`, `Friend 1`, `Friend 2`
+- Assigned To: `Me`, `Chetan`, `Nandhu`
 
-If you rename `Friend 1`/`Friend 2` to real names (as planned), update both
-`lib/constants.ts` **and** the `check` constraint on `assigned_to` in
-Supabase (`alter table leads drop constraint ...` then re-add it with the
-new values) — the two need to stay in sync.
+If you rename any of these again, update both `lib/constants.ts` **and** the
+`check` constraint on `assigned_to` in Supabase (`alter table leads drop
+constraint ...` then re-add it with the new values) — the two need to stay
+in sync.
 
 ## Project structure
 

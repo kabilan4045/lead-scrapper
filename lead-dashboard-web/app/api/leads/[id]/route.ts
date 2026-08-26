@@ -56,6 +56,18 @@ export async function PATCH(
     update.notes = typeof body.notes === "string" && body.notes ? body.notes : null;
   }
 
+  if ("payment_received" in body) {
+    if (typeof body.payment_received !== "boolean") {
+      return NextResponse.json({ error: "payment_received must be true or false" }, { status: 400 });
+    }
+    update.payment_received = body.payment_received;
+    // Receiving payment implies the deal is won — keep status in sync so a
+    // lead can't end up marked paid while still sitting in an earlier stage.
+    if (body.payment_received) {
+      update.status = "Closed-Won";
+    }
+  }
+
   const { data, error } = await supabaseAdmin
     .from("leads")
     .update(update)
