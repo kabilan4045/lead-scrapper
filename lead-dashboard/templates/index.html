@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lead Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Lead Dashboard</h1>
+    <div class="header-actions">
+      <span id="status-line" class="muted"></span>
+      <button id="refresh-btn" type="button">Refresh</button>
+    </div>
+  </header>
+
+  <section id="summary" class="summary-strip"></section>
+
+  <section class="toolbar">
+    <input id="search" type="search" placeholder="Search business name or phone…">
+
+    <label>
+      Status
+      <select id="filter-status">
+        <option value="">All</option>
+        {% for s in status_options %}
+        <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      Assigned To
+      <select id="filter-assigned">
+        <option value="">All</option>
+        {% for a in assigned_to_options %}
+        <option value="{{ a }}">{{ a }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      City/Area
+      <select id="filter-city">
+        <option value="">All</option>
+      </select>
+    </label>
+  </section>
+
+  <section class="table-wrap">
+    <table id="leads-table">
+      <thead>
+        <tr>
+          <th data-sort="business_name">Business Name</th>
+          <th data-sort="phone">Phone Number</th>
+          <th data-sort="city_area">City/Area</th>
+          <th data-sort="category">Category</th>
+          <th data-sort="assigned_to">Assigned To</th>
+          <th data-sort="status">Status</th>
+          <th data-sort="follow_up_date">Follow-up Date</th>
+          <th data-sort="deal_value">Deal Value</th>
+          <th data-sort="website">Website</th>
+          <th data-sort="notes">Notes</th>
+        </tr>
+      </thead>
+      <tbody id="leads-tbody"></tbody>
+    </table>
+    <p id="empty-state" class="muted" hidden>No leads match the current filters.</p>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script>
+    window.STATUS_OPTIONS = {{ status_options | tojson }};
+    window.ASSIGNED_TO_OPTIONS = {{ assigned_to_options | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
