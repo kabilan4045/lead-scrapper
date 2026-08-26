@@ -89,7 +89,7 @@ export default function AddLeadForm({
           />
         </Field>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="City/Area">
             <input
               value={form.city_area}
@@ -110,7 +110,7 @@ export default function AddLeadForm({
           <input value={form.website} onChange={(e) => set("website", e.target.value)} className="input" />
         </Field>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Assigned To">
             <select
               value={form.assigned_to}
@@ -148,7 +148,11 @@ export default function AddLeadForm({
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex justify-end gap-2 pt-2">
-          <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm rounded-md border border-slate-300">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-1.5 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+          >
             Cancel
           </button>
           <button

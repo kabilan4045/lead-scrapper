@@ -44,7 +44,7 @@ function LoginForm() {
           type="password"
           value={passcode}
           onChange={(e) => setPasscode(e.target.value)}
-          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-3 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-slate-400"
           placeholder="Passcode"
           autoFocus
         />

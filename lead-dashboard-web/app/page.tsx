@@ -110,12 +110,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="flex flex-col gap-3 px-4 py-4 border-b border-slate-200 bg-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <h1 className="text-lg font-semibold text-slate-900">Lead Dashboard</h1>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <span className="text-xs text-slate-500">{loading ? "Loading…" : statusLine}</span>
-          <button onClick={loadLeads} className="text-sm border border-slate-300 rounded-md px-3 py-1.5">
+          <button
+            onClick={loadLeads}
+            className="text-sm font-medium text-slate-700 border border-slate-300 rounded-md px-3 py-1.5 hover:bg-slate-50"
+          >
             Refresh
           </button>
           <button onClick={handleLogout} className="text-sm text-slate-500 hover:text-slate-800">
@@ -124,7 +127,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="px-6 py-6 space-y-6">
+      <main className="px-4 py-6 space-y-6 sm:px-6">
         <SummaryStrip leads={leads} />
         <FilterBar filters={filters} onChange={setFilters} cities={cities} onAddLeadClick={() => setShowAddForm(true)} />
         <LeadsTable leads={filtered} onUpdate={handleUpdate} />
@@ -133,7 +136,7 @@ export default function DashboardPage() {
       {showAddForm && <AddLeadForm onSubmit={handleAddLead} onClose={() => setShowAddForm(false)} />}
 
       {error && (
-        <div className="fixed bottom-5 right-5 bg-red-600 text-white text-sm rounded-md px-4 py-2 shadow-lg max-w-sm">
+        <div className="fixed bottom-5 left-4 right-4 sm:left-auto sm:right-5 bg-red-600 text-white text-sm rounded-md px-4 py-2 shadow-lg sm:max-w-sm">
           {error}
           <button onClick={() => setError(null)} className="ml-3 underline">
             Dismiss

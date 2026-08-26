@@ -19,15 +19,15 @@ export default function FilterBar({
   onAddLeadClick: () => void;
 }) {
   return (
-    <section className="flex flex-wrap items-end gap-4">
-      <label className="flex flex-col gap-1 text-xs text-slate-500">
+    <section className="flex flex-wrap items-end gap-3 sm:gap-4">
+      <label className="flex flex-col gap-1 text-xs text-slate-500 flex-1 min-w-[180px] sm:flex-none">
         Search
         <input
           type="search"
           value={filters.search}
           onChange={(e) => onChange({ ...filters, search: e.target.value })}
           placeholder="Business name or phone…"
-          className="min-w-[220px] border border-slate-300 rounded-md px-3 py-1.5 text-sm text-slate-900"
+          className="w-full sm:min-w-[220px] border border-slate-300 rounded-md px-3 py-1.5 text-sm text-slate-900"
         />
       </label>
 
@@ -82,7 +82,7 @@ export default function FilterBar({
       <button
         type="button"
         onClick={onAddLeadClick}
-        className="ml-auto bg-slate-900 text-white rounded-md px-4 py-1.5 text-sm font-medium"
+        className="w-full sm:w-auto sm:ml-auto bg-slate-900 text-white rounded-md px-4 py-2 sm:py-1.5 text-sm font-medium hover:bg-slate-800"
       >
         + Add Lead
       </button>

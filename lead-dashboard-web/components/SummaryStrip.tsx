@@ -51,8 +51,8 @@ export default function SummaryStrip({ leads }: { leads: Lead[] }) {
           </thead>
           <tbody>
             {ASSIGNED_TO_OPTIONS.map((person) => (
-              <tr key={person} className="border-t border-slate-100">
-                <td className="px-4 py-2">{person}</td>
+              <tr key={person} className="border-t border-slate-100 text-slate-800">
+                <td className="px-4 py-2 font-medium text-slate-900">{person}</td>
                 <td className="px-4 py-2">{stats.perPerson[person].deals}</td>
                 <td className="px-4 py-2">{formatMoney(stats.perPerson[person].revenue)}</td>
               </tr>

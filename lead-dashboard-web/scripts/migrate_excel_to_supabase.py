@@ -3,8 +3,9 @@
 and inserts every row into the Supabase "leads" table.
 
 Safe to re-run: rows are matched by phone_number (which is UNIQUE in the
-Supabase schema) and upserted, so running this twice does not create
-duplicates — it just re-syncs the same rows.
+Supabase schema). Any phone number already in Supabase is left untouched
+(not overwritten) — so running this again after someone has edited a lead
+in the dashboard won't clobber their changes with stale Excel data.
 
 Usage:
     python3 migrate_excel_to_supabase.py --excel-path /path/to/Lead_Tracker_and_Dashboard.xlsx [--dry-run]
@@ -157,7 +158,10 @@ def read_excel_rows(excel_path):
     return rows, skipped
 
 
-def upsert_rows(supabase_url, service_key, rows):
+def insert_new_rows(supabase_url, service_key, rows):
+    """Insert rows, skipping (not overwriting) any phone_number that already
+    exists — so re-running this after someone has edited a lead in the
+    dashboard never clobbers their changes with stale Excel data."""
     if not rows:
         return 0
     endpoint = f"{supabase_url.rstrip('/')}/rest/v1/leads"
@@ -165,11 +169,11 @@ def upsert_rows(supabase_url, service_key, rows):
         "apikey": service_key,
         "Authorization": f"Bearer {service_key}",
         "Content-Type": "application/json",
-        "Prefer": "resolution=merge-duplicates,return=minimal",
+        "Prefer": "resolution=ignore-duplicates,return=representation",
     }
     resp = requests.post(f"{endpoint}?on_conflict=phone_number", headers=headers, json=rows, timeout=60)
     resp.raise_for_status()
-    return len(rows)
+    return len(resp.json())
 
 
 def main():
@@ -193,8 +197,11 @@ def main():
         return
 
     url, key = get_supabase_config()
-    inserted = upsert_rows(url, key, rows)
-    print(f"\nUpserted {inserted} row(s) into Supabase (matched/merged on phone_number).")
+    inserted = insert_new_rows(url, key, rows)
+    already_present = len(rows) - inserted
+    print(f"\nMigrated {inserted} new row(s) into Supabase.")
+    if already_present:
+        print(f"Skipped {already_present} row(s) already present in Supabase (matched by phone_number) — left untouched.")
 
 
 if __name__ == "__main__":

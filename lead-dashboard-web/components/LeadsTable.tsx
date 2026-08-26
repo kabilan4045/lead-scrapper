@@ -112,8 +112,8 @@ export default function LeadsTable({
         </thead>
         <tbody>
           {sorted.map((lead) => (
-            <tr key={lead.id} className="border-t border-slate-100 hover:bg-slate-50 align-top">
-              <td className="px-3 py-2 whitespace-nowrap">{lead.business_name}</td>
+            <tr key={lead.id} className="border-t border-slate-100 hover:bg-slate-50 align-top text-slate-800">
+              <td className="px-3 py-2 whitespace-nowrap font-medium text-slate-900">{lead.business_name}</td>
               <td className="px-3 py-2 whitespace-nowrap">{lead.phone_number}</td>
               <td className="px-3 py-2 whitespace-nowrap">{lead.city_area || ""}</td>
               <td className="px-3 py-2 whitespace-nowrap">{lead.category || ""}</td>
@@ -122,7 +122,7 @@ export default function LeadsTable({
                   value={lead.assigned_to ?? ""}
                   disabled={savingId === lead.id}
                   onChange={(e) => handleEdit(lead.id, { assigned_to: e.target.value as AssignedTo | "" })}
-                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full"
+                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full bg-white text-slate-900 disabled:opacity-50"
                 >
                   <option value="">Unassigned</option>
                   {ASSIGNED_TO_OPTIONS.map((a) => (
@@ -137,7 +137,7 @@ export default function LeadsTable({
                   value={lead.status}
                   disabled={savingId === lead.id}
                   onChange={(e) => handleEdit(lead.id, { status: e.target.value as Status })}
-                  className={`border border-slate-300 rounded-md px-2 py-1 text-sm w-full bg-white ${STATUS_STYLES[lead.status]}`}
+                  className={`border border-slate-300 rounded-md px-2 py-1 text-sm w-full bg-white disabled:opacity-50 ${STATUS_STYLES[lead.status]}`}
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>
@@ -157,7 +157,7 @@ export default function LeadsTable({
                       handleEdit(lead.id, { follow_up_date: e.target.value });
                     }
                   }}
-                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full"
+                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full bg-white text-slate-900 disabled:opacity-50"
                 />
               </td>
               <td className="px-3 py-2 whitespace-nowrap">
@@ -190,7 +190,7 @@ export default function LeadsTable({
                       handleEdit(lead.id, { notes: e.target.value });
                     }
                   }}
-                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full"
+                  className="border border-slate-300 rounded-md px-2 py-1 text-sm w-full bg-white text-slate-900 disabled:opacity-50"
                 />
               </td>
             </tr>

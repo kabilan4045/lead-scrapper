@@ -51,9 +51,10 @@ enter `APP_PASSCODE`.
 ## 3. Migrate existing leads from Excel (one-time)
 
 `scripts/migrate_excel_to_supabase.py` reads the "Leads" tab of
-`Lead_Tracker_and_Dashboard.xlsx` and upserts every row into Supabase,
-matched on phone number (so it's safe to re-run — it won't create
-duplicates).
+`Lead_Tracker_and_Dashboard.xlsx` and inserts every row into Supabase,
+matched on phone number. Safe to re-run: a phone number already in Supabase
+is left untouched (not overwritten), so re-running this after editing a
+lead in the dashboard won't clobber that edit.
 
 ```bash
 cd scripts
