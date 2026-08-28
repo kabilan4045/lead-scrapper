@@ -56,10 +56,10 @@ export default function AddLeadForm({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/30 flex items-end justify-center p-0 z-50 sm:items-center sm:p-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 space-y-3 max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-lg p-5 sm:p-6 space-y-3.5 max-h-[92vh] overflow-y-auto"
       >
         <h2 className="text-lg font-semibold text-slate-900">Add Lead</h2>
 
@@ -147,18 +147,18 @@ export default function AddLeadForm({
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+            className="px-4 py-2.5 sm:py-2 text-sm rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-1.5 text-sm rounded-md bg-slate-900 text-white disabled:opacity-50"
+            className="px-4 py-2.5 sm:py-2 text-sm rounded-lg bg-indigo-600 text-white font-semibold shadow-sm hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 transition-colors"
           >
             {saving ? "Saving…" : "Add Lead"}
           </button>

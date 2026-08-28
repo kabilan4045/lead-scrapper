@@ -10,7 +10,7 @@ create table if not exists leads (
   category          text,
   source            text,
   date_added        date not null default current_date,
-  assigned_to       text check (assigned_to is null or assigned_to in ('Me', 'Chetan', 'Nandhu')),
+  assigned_to       text check (assigned_to is null or assigned_to in ('Chetan', 'Nandhu')),
   status            text not null default 'New' check (
                       status in ('New', 'Contacted', 'Follow-up', 'Interested', 'Not Interested', 'Closed-Won', 'Closed-Lost')
                     ),
@@ -23,6 +23,9 @@ create table if not exists leads (
   website           text,
   rating            numeric(2, 1) check (rating is null or (rating >= 0 and rating <= 5)),
   email             text,
+  address           text,
+  opening_hours     text,
+  reviews_count     integer,
   created_at        timestamptz not null default now()
 );
 

@@ -19,7 +19,7 @@ POLL_INTERVAL_SECONDS = 5
 MAX_POLL_SECONDS = 900
 
 # Keep in sync with lead-dashboard-web/lib/constants.ts (ASSIGNED_TO_OPTIONS).
-ASSIGNED_TO_OPTIONS = ["Me", "Chetan", "Nandhu"]
+ASSIGNED_TO_OPTIONS = ["Chetan", "Nandhu"]
 
 
 def parse_args():
@@ -106,11 +106,24 @@ def normalize_phone(raw):
     return digits if len(digits) == 10 else None
 
 
+def format_opening_hours(entries):
+    """Apify returns e.g. [{"day": "Monday", "hours": "7 AM to 9 PM"}, ...]."""
+    if not entries:
+        return None
+    parts = [f"{e.get('day')}: {e.get('hours')}" for e in entries if e.get("day") and e.get("hours")]
+    return "; ".join(parts) if parts else None
+
+
 def clean_records(raw_items, category):
-    """Keep rows with a valid phone number and drop duplicate phones within this batch."""
+    """Keep rows with a valid phone number, drop closed businesses (avoids
+    wasting a call), and drop duplicate phones within this batch."""
     seen_phones = set()
     cleaned = []
+    closed = 0
     for item in raw_items:
+        if item.get("permanentlyClosed") or item.get("temporarilyClosed"):
+            closed += 1
+            continue
         phone = normalize_phone(item.get("phoneUnformatted") or item.get("phone"))
         if not phone or phone in seen_phones:
             continue
@@ -124,9 +137,12 @@ def clean_records(raw_items, category):
                 "website": item.get("website") or None,
                 "rating": item.get("totalScore"),
                 "email": emails[0] if emails else None,
+                "address": item.get("address") or None,
+                "opening_hours": format_opening_hours(item.get("openingHours")),
+                "reviews_count": item.get("reviewsCount"),
             }
         )
-    return cleaned
+    return cleaned, closed
 
 
 # --- Supabase ------------------------------------------------------------
@@ -159,6 +175,9 @@ def insert_leads(supabase_url, service_key, records, location):
             "website": rec["website"],
             "rating": rec["rating"],
             "email": rec["email"],
+            "address": rec["address"],
+            "opening_hours": rec["opening_hours"],
+            "reviews_count": rec["reviews_count"],
         }
         for rec in records
     ]
@@ -186,8 +205,8 @@ def main():
     scraped_count = len(raw_items)
     print(f"Scraped {scraped_count} places from Google Maps.")
 
-    cleaned = clean_records(raw_items, args.category)
-    dropped_in_batch = scraped_count - len(cleaned)
+    cleaned, closed_count = clean_records(raw_items, args.category)
+    dropped_in_batch = scraped_count - len(cleaned) - closed_count
 
     known_phones = fetch_existing_phones(supabase_url, supabase_key, [r["phone"] for r in cleaned])
     new_records = [r for r in cleaned if r["phone"] not in known_phones]
@@ -198,6 +217,7 @@ def main():
     print("\nSummary")
     print("-------")
     print(f"Scraped from Google Maps:        {scraped_count}")
+    print(f"Dropped (closed business):       {closed_count}")
     print(f"Dropped (no/duplicate phone):    {dropped_in_batch}")
     print(f"Skipped (already in Supabase):   {duplicate_existing}")
     print(f"New leads added to Supabase:     {inserted}")

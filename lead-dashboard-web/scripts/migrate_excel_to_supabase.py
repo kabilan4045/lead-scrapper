@@ -52,7 +52,7 @@ EXCEL_TO_DB = {
 }
 
 VALID_STATUSES = {"New", "Contacted", "Follow-up", "Interested", "Not Interested", "Closed-Won", "Closed-Lost"}
-VALID_ASSIGNED_TO = {"Me", "Chetan", "Nandhu"}
+VALID_ASSIGNED_TO = {"Chetan", "Nandhu"}
 
 
 def parse_args():

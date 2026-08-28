@@ -9,7 +9,7 @@ export const STATUS_OPTIONS = [
 ] as const;
 export type Status = (typeof STATUS_OPTIONS)[number];
 
-export const ASSIGNED_TO_OPTIONS = ["Me", "Chetan", "Nandhu"] as const;
+export const ASSIGNED_TO_OPTIONS = ["Chetan", "Nandhu"] as const;
 export type AssignedTo = (typeof ASSIGNED_TO_OPTIONS)[number];
 
 export function randomAssignee(): AssignedTo {
@@ -45,6 +45,9 @@ export type Lead = {
   website: string | null;
   rating: number | null;
   email: string | null;
+  address: string | null;
+  opening_hours: string | null;
+  reviews_count: number | null;
   created_at: string;
 };
 

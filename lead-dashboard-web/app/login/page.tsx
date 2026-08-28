@@ -33,26 +33,41 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-12">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-sm border border-slate-200 rounded-lg p-8 w-full max-w-sm"
+        className="bg-white shadow-xl shadow-slate-200/60 border border-slate-200 rounded-2xl p-8 sm:p-9 w-full max-w-sm"
       >
-        <h1 className="text-lg font-semibold text-slate-900 mb-1">Lead Dashboard</h1>
-        <p className="text-sm text-slate-500 mb-4">Enter the shared passcode to continue.</p>
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+          <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+            <path
+              d="M4 6h16M4 12h16M4 18h10"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <h1 className="text-xl font-semibold text-slate-900 text-center mb-1">Lead Dashboard</h1>
+        <p className="text-sm text-slate-500 text-center mb-6">Enter the shared passcode to continue.</p>
         <input
           type="password"
           value={passcode}
           onChange={(e) => setPasscode(e.target.value)}
-          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-3 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full border border-slate-300 rounded-lg px-3.5 py-3 mb-3 text-base text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
           placeholder="Passcode"
           autoFocus
+          inputMode="numeric"
         />
-        {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-600 mb-3 flex items-center gap-1.5" role="alert">
+            {error}
+          </p>
+        )}
         <button
           type="submit"
           disabled={loading || !passcode}
-          className="w-full bg-slate-900 text-white rounded-md px-3 py-2 text-sm font-medium disabled:opacity-50"
+          className="w-full bg-indigo-600 text-white rounded-lg px-3 py-3 text-sm font-semibold shadow-sm hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-colors"
         >
           {loading ? "Checking…" : "Enter"}
         </button>

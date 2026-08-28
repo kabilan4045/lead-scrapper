@@ -1,6 +1,16 @@
 import { useMemo } from "react";
-import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, type Lead } from "@/lib/constants";
+import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, type Status, type Lead } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
+
+const STATUS_ACCENT: Record<Status, string> = {
+  New: "border-t-slate-400",
+  Contacted: "border-t-blue-400",
+  "Follow-up": "border-t-amber-400",
+  Interested: "border-t-sky-400",
+  "Not Interested": "border-t-slate-300",
+  "Closed-Won": "border-t-emerald-500",
+  "Closed-Lost": "border-t-red-400",
+};
 
 export default function SummaryStrip({ leads }: { leads: Lead[] }) {
   const stats = useMemo(() => {
@@ -33,47 +43,62 @@ export default function SummaryStrip({ leads }: { leads: Lead[] }) {
   }, [leads]);
 
   return (
-    <section className="space-y-3">
-      <div className="flex flex-wrap gap-3">
-        <SummaryCard label="Total Leads" value={stats.total} />
+    <section className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-2.5 sm:gap-3">
+        <SummaryCard label="Total Leads" value={stats.total} accent="border-t-indigo-500" />
         {STATUS_OPTIONS.map((s) => (
-          <SummaryCard key={s} label={s} value={stats.statusCounts[s]} />
+          <SummaryCard key={s} label={s} value={stats.statusCounts[s]} accent={STATUS_ACCENT[s]} />
         ))}
-        <SummaryCard label="Conversion Rate" value={`${stats.conversionRate.toFixed(1)}%`} />
-        <SummaryCard label="Deal Value (Closed-Won)" value={formatMoney(stats.closedWonDealValue)} />
+        <SummaryCard label="Conversion" value={`${stats.conversionRate.toFixed(1)}%`} accent="border-t-indigo-500" />
+        <SummaryCard label="Revenue (Won)" value={formatMoney(stats.closedWonDealValue)} accent="border-t-emerald-500" />
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-slate-500 bg-slate-50">
-              <th className="px-4 py-2">Assigned To</th>
-              <th className="px-4 py-2">Total Leads</th>
-              <th className="px-4 py-2">Deals Closed</th>
-              <th className="px-4 py-2">Revenue</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ASSIGNED_TO_OPTIONS.map((person) => (
-              <tr key={person} className="border-t border-slate-100 text-slate-800">
-                <td className="px-4 py-2 font-medium text-slate-900">{person}</td>
-                <td className="px-4 py-2">{stats.perPerson[person].totalLeads}</td>
-                <td className="px-4 py-2">{stats.perPerson[person].deals}</td>
-                <td className="px-4 py-2">{formatMoney(stats.perPerson[person].revenue)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {ASSIGNED_TO_OPTIONS.map((person) => {
+          const p = stats.perPerson[person];
+          return (
+            <div key={person} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
+                  {person.charAt(0)}
+                </div>
+                <span className="font-semibold text-slate-900">{person}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <Stat label="Leads" value={p.totalLeads} />
+                <Stat label="Closed" value={p.deals} valueClassName="text-emerald-700" />
+                <Stat label="Revenue" value={formatMoney(p.revenue)} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string | number }) {
+function Stat({
+  label,
+  value,
+  valueClassName = "text-slate-900",
+}: {
+  label: string;
+  value: string | number;
+  valueClassName?: string;
+}) {
   return (
-    <div className="bg-white border border-slate-200 rounded-lg px-4 py-2 min-w-[110px]">
-      <div className="text-xl font-semibold text-slate-900">{value}</div>
-      <div className="text-[11px] uppercase tracking-wide text-slate-500">{label}</div>
+    <div>
+      <div className={`text-base font-semibold sm:text-lg ${valueClassName}`}>{value}</div>
+      <div className="text-[10px] uppercase tracking-wide text-slate-500 sm:text-[11px]">{label}</div>
+    </div>
+  );
+}
+
+function SummaryCard({ label, value, accent }: { label: string; value: string | number; accent: string }) {
+  return (
+    <div className={`bg-white border border-slate-200 border-t-2 ${accent} rounded-lg px-3 py-2.5 sm:px-4`}>
+      <div className="text-lg font-semibold text-slate-900 sm:text-xl">{value}</div>
+      <div className="text-[10px] uppercase tracking-wide text-slate-500 sm:text-[11px] truncate">{label}</div>
     </div>
   );
 }
