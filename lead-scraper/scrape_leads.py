@@ -29,6 +29,16 @@ def parse_args():
     parser.add_argument("--category", required=True, help='Business category, e.g. "hardware shop"')
     parser.add_argument("--location", required=True, help='Location, e.g. "Jayanagar, Bangalore"')
     parser.add_argument("--max", type=int, default=100, help="Maximum number of results to scrape (default: 100)")
+    parser.add_argument(
+        "--website-quota",
+        type=int,
+        default=20,
+        help=(
+            "Max total leads WITH an existing website to keep across the whole campaign "
+            "(checked against what's already in Supabase, default: 20). No-website leads "
+            "are never limited by this — they're always prioritized."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -158,6 +168,15 @@ def fetch_existing_phones(supabase_url, service_key, phones):
     return {row["phone_number"] for row in resp.json()}
 
 
+def count_existing_with_website(supabase_url, service_key):
+    """How many leads already in Supabase have a non-blank website."""
+    headers = {"apikey": service_key, "Authorization": f"Bearer {service_key}"}
+    params = {"select": "id", "website": "not.is.null"}
+    resp = requests.get(f"{supabase_url}/rest/v1/leads", headers=headers, params=params, timeout=30)
+    resp.raise_for_status()
+    return len(resp.json())
+
+
 def insert_leads(supabase_url, service_key, records, location):
     if not records:
         return 0
@@ -212,15 +231,33 @@ def main():
     new_records = [r for r in cleaned if r["phone"] not in known_phones]
     duplicate_existing = len(cleaned) - len(new_records)
 
-    inserted = insert_leads(supabase_url, supabase_key, new_records, args.location)
+    # No-website leads are always prioritized (the whole point is pitching
+    # them a new site); leads that already have a website are capped
+    # globally at --website-quota, since those are a smaller "revamp" list.
+    without_website = [r for r in new_records if not r["website"]]
+    with_website = [r for r in new_records if r["website"]]
+
+    existing_with_website = count_existing_with_website(supabase_url, supabase_key)
+    remaining_quota = max(0, args.website_quota - existing_with_website)
+    kept_with_website = with_website[:remaining_quota]
+    dropped_for_quota = len(with_website) - len(kept_with_website)
+
+    to_insert = without_website + kept_with_website
+    inserted = insert_leads(supabase_url, supabase_key, to_insert, args.location)
 
     print("\nSummary")
     print("-------")
-    print(f"Scraped from Google Maps:        {scraped_count}")
-    print(f"Dropped (closed business):       {closed_count}")
-    print(f"Dropped (no/duplicate phone):    {dropped_in_batch}")
-    print(f"Skipped (already in Supabase):   {duplicate_existing}")
-    print(f"New leads added to Supabase:     {inserted}")
+    print(f"Scraped from Google Maps:            {scraped_count}")
+    print(f"Dropped (closed business):           {closed_count}")
+    print(f"Dropped (no/duplicate phone):        {dropped_in_batch}")
+    print(f"Skipped (already in Supabase):       {duplicate_existing}")
+    print(f"Dropped (website quota reached):     {dropped_for_quota}")
+    print(f"New leads added to Supabase:         {inserted}")
+    print(f"  - without website:                 {len(without_website)}")
+    print(f"  - with website (revamp):           {len(kept_with_website)}")
+    print(
+        f"With-website quota: {existing_with_website + len(kept_with_website)}/{args.website_quota} used"
+    )
 
 
 if __name__ == "__main__":
