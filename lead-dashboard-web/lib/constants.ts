@@ -9,6 +9,17 @@ export const STATUS_OPTIONS = [
 ] as const;
 export type Status = (typeof STATUS_OPTIONS)[number];
 
+/** Subtle chip colors (background + text) used anywhere Status is shown or edited. */
+export const STATUS_BADGE: Record<Status, string> = {
+  New: "bg-slate-100 text-slate-700",
+  Contacted: "bg-blue-50 text-blue-700",
+  "Follow-up": "bg-amber-50 text-amber-700",
+  Interested: "bg-sky-50 text-sky-700",
+  "Not Interested": "bg-slate-100 text-slate-500",
+  "Closed-Won": "bg-emerald-50 text-emerald-700",
+  "Closed-Lost": "bg-red-50 text-red-700",
+};
+
 export const ASSIGNED_TO_OPTIONS = ["Chetan", "Nandhu"] as const;
 export type AssignedTo = (typeof ASSIGNED_TO_OPTIONS)[number];
 

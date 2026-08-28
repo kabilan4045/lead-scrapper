@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, randomAssignee, type AssignedTo, type Status } from "@/lib/constants";
+import {
+  ASSIGNED_TO_OPTIONS,
+  STATUS_BADGE,
+  STATUS_OPTIONS,
+  randomAssignee,
+  type AssignedTo,
+  type Status,
+} from "@/lib/constants";
+import Select from "@/components/Select";
 
 export type NewLeadInput = {
   business_name: string;
@@ -112,27 +120,27 @@ export default function AddLeadForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Assigned To (randomly picked, change if needed)">
-            <select
-              value={form.assigned_to}
-              onChange={(e) => set("assigned_to", e.target.value as AssignedTo | "")}
-              className="input"
-            >
+            <Select value={form.assigned_to} onChange={(e) => set("assigned_to", e.target.value as AssignedTo | "")}>
               <option value="">Unassigned</option>
               {ASSIGNED_TO_OPTIONS.map((a) => (
                 <option key={a} value={a}>
                   {a}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
           <Field label="Status">
-            <select value={form.status} onChange={(e) => set("status", e.target.value as Status)} className="input">
+            <Select
+              value={form.status}
+              onChange={(e) => set("status", e.target.value as Status)}
+              colorClassName={STATUS_BADGE[form.status]}
+            >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </Field>
         </div>
 

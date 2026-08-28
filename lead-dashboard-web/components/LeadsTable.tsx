@@ -1,8 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS, type AssignedTo, type Lead, type Status } from "@/lib/constants";
+import {
+  ASSIGNED_TO_OPTIONS,
+  STATUS_BADGE,
+  STATUS_OPTIONS,
+  type AssignedTo,
+  type Lead,
+  type Status,
+} from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
+import Select from "@/components/Select";
 
 type SortField =
   | "business_name"
@@ -34,26 +42,6 @@ const COLUMNS: { field: SortField; label: string }[] = [
   { field: "reviews_count", label: "Reviews" },
   { field: "notes", label: "Notes" },
 ];
-
-const STATUS_STYLES: Record<Status, string> = {
-  New: "text-slate-700",
-  Contacted: "text-slate-700",
-  "Follow-up": "text-amber-700",
-  Interested: "text-blue-700",
-  "Not Interested": "text-slate-400",
-  "Closed-Won": "text-emerald-700 font-semibold",
-  "Closed-Lost": "text-red-700 font-semibold",
-};
-
-const STATUS_BADGE: Record<Status, string> = {
-  New: "bg-slate-100 text-slate-700",
-  Contacted: "bg-blue-50 text-blue-700",
-  "Follow-up": "bg-amber-50 text-amber-700",
-  Interested: "bg-sky-50 text-sky-700",
-  "Not Interested": "bg-slate-100 text-slate-500",
-  "Closed-Won": "bg-emerald-50 text-emerald-700",
-  "Closed-Lost": "bg-red-50 text-red-700",
-};
 
 export type EditableFields = {
   status?: Status;
@@ -166,11 +154,10 @@ export default function LeadsTable({
                 <td className="px-3 py-2.5 whitespace-nowrap">{lead.city_area || ""}</td>
                 <td className="px-3 py-2.5 whitespace-nowrap">{lead.category || ""}</td>
                 <td className="px-3 py-2.5">
-                  <select
+                  <Select
                     value={lead.assigned_to ?? ""}
                     disabled={savingId === lead.id}
                     onChange={(e) => handleEdit(lead.id, { assigned_to: e.target.value as AssignedTo | "" })}
-                    className="border border-slate-300 rounded-lg px-2 py-1.5 text-sm w-full bg-white text-slate-900 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Unassigned</option>
                     {ASSIGNED_TO_OPTIONS.map((a) => (
@@ -178,21 +165,21 @@ export default function LeadsTable({
                         {a}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </td>
                 <td className="px-3 py-2.5">
-                  <select
+                  <Select
                     value={lead.status}
                     disabled={savingId === lead.id}
                     onChange={(e) => handleEdit(lead.id, { status: e.target.value as Status })}
-                    className={`border border-slate-300 rounded-lg px-2 py-1.5 text-sm w-full bg-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${STATUS_STYLES[lead.status]}`}
+                    colorClassName={STATUS_BADGE[lead.status]}
                   >
                     {STATUS_OPTIONS.map((s) => (
                       <option key={s} value={s}>
                         {s}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </td>
                 <td className="px-3 py-2.5 text-center">
                   <input
@@ -326,11 +313,10 @@ export default function LeadsTable({
             )}
 
             <div className="grid grid-cols-2 gap-2 pt-1">
-              <select
+              <Select
                 value={lead.assigned_to ?? ""}
                 disabled={savingId === lead.id}
                 onChange={(e) => handleEdit(lead.id, { assigned_to: e.target.value as AssignedTo | "" })}
-                className="border border-slate-300 rounded-lg px-2 py-2 text-sm bg-white text-slate-900 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Unassigned</option>
                 {ASSIGNED_TO_OPTIONS.map((a) => (
@@ -338,19 +324,19 @@ export default function LeadsTable({
                     {a}
                   </option>
                 ))}
-              </select>
-              <select
+              </Select>
+              <Select
                 value={lead.status}
                 disabled={savingId === lead.id}
                 onChange={(e) => handleEdit(lead.id, { status: e.target.value as Status })}
-                className="border border-slate-300 rounded-lg px-2 py-2 text-sm bg-white text-slate-900 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                colorClassName={STATUS_BADGE[lead.status]}
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div className="flex items-center justify-between gap-2">

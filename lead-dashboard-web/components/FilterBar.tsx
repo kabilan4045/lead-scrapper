@@ -1,4 +1,5 @@
 import { ASSIGNED_TO_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import Select from "@/components/Select";
 
 export type Filters = {
   search: string;
@@ -7,7 +8,7 @@ export type Filters = {
   city: string;
 };
 
-const selectClass =
+const searchInputClass =
   "w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
 
 export default function FilterBar({
@@ -31,33 +32,28 @@ export default function FilterBar({
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
             placeholder="Business name or phone…"
-            className={selectClass}
+            className={searchInputClass}
           />
         </label>
 
         <div className="grid grid-cols-3 gap-2 sm:contents">
           <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 sm:w-40">
             Status
-            <select
-              value={filters.status}
-              onChange={(e) => onChange({ ...filters, status: e.target.value })}
-              className={selectClass}
-            >
+            <Select value={filters.status} onChange={(e) => onChange({ ...filters, status: e.target.value })}>
               <option value="">All</option>
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
                   {s}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
 
           <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 sm:w-36">
             Assigned To
-            <select
+            <Select
               value={filters.assignedTo}
               onChange={(e) => onChange({ ...filters, assignedTo: e.target.value })}
-              className={selectClass}
             >
               <option value="">All</option>
               {ASSIGNED_TO_OPTIONS.map((a) => (
@@ -65,23 +61,19 @@ export default function FilterBar({
                   {a}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
 
           <label className="flex flex-col gap-1 text-xs font-medium text-slate-500 sm:w-44">
             City/Area
-            <select
-              value={filters.city}
-              onChange={(e) => onChange({ ...filters, city: e.target.value })}
-              className={selectClass}
-            >
+            <Select value={filters.city} onChange={(e) => onChange({ ...filters, city: e.target.value })}>
               <option value="">All</option>
               {cities.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
 
